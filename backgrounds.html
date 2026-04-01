@@ -1,0 +1,166 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>6 Professional App Background Designs</title>
+    <style>
+        /* --- Base Styles & Resets --- */
+        html, body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            scroll-snap-type: y mandatory;
+            background-color: #000;
+        }
+
+        /* --- Section & Label Styles --- */
+        .background-section {
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            scroll-snap-align: start;
+        }
+
+        .label {
+            color: rgba(255, 255, 255, 0.9);
+            background-color: rgba(0, 0, 0, 0.4);
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-size: 1.5rem;
+            font-weight: 300;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        /* --- 1. DEEP SPACE --- */
+        /* Dark navy to black with subtle star-like noise dots */
+        .deep-space {
+            background-color: #000000;
+            background-image: 
+                /* Star layer 1 (small, white) */
+                radial-gradient(circle at 10% 20%, white 0.5px, transparent 1.5px),
+                radial-gradient(circle at 30% 90%, white 0.5px, transparent 1.5px),
+                radial-gradient(circle at 80% 40%, white 0.5px, transparent 1.5px),
+                /* Star layer 2 (tiny, blue) */
+                radial-gradient(circle at 55% 65%, #87CEEB 0.5px, transparent 1.5px),
+                radial-gradient(circle at 95% 15%, #87CEEB 0.5px, transparent 1.5px),
+                radial-gradient(circle at 40% 50%, #87CEEB 0.5px, transparent 1.5px),
+                /* Base gradient */
+                linear-gradient(to bottom, #0a0a1a, #000000);
+            /* Different tile sizes create a more random, non-repeating pattern */
+            background-size: 
+                150px 150px, 
+                200px 200px, 
+                120px 120px, 
+                180px 180px, 
+                220px 220px,
+                250px 250px,
+                100% 100%;
+            background-repeat: repeat;
+        }
+
+        /* --- 2. NORTHERN LIGHTS --- */
+        /* Dark base with subtle aurora-like green/teal gradients */
+        .northern-lights {
+            background-color: #0a0a0a;
+            background-image:
+                /* Teal aurora glow */
+                radial-gradient(ellipse 120% 70% at 20% 0%, #10b98120, transparent),
+                /* Blue aurora glow */
+                radial-gradient(ellipse 90% 60% at 80% 0%, #0ea5e920, transparent);
+            background-repeat: no-repeat;
+        }
+
+        /* --- 3. CARBON FIBER --- */
+        /* Dark with subtle diagonal line pattern */
+        .carbon-fiber {
+            background-color: #111111;
+            background-image: 
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 4px,
+                    #1a1a1a 4px,
+                    #1a1a1a 5px
+                ),
+                linear-gradient(to bottom, #111111, #000000);
+        }
+
+        /* --- 4. OCEAN DEPTH --- */
+        /* Dark blue to black with subtle wave-like horizontal gradients */
+        .ocean-depth {
+            background-color: #0a0a0a;
+            background-image:
+                /* Subtle light bands */
+                radial-gradient(ellipse at 50% -50%, #0c1426cc, transparent 60%),
+                radial-gradient(ellipse at 10% 120%, #0c142699, transparent 70%),
+                /* Base gradient */
+                linear-gradient(to bottom, #0c1426, #0a0a0a 70%);
+            background-repeat: no-repeat;
+        }
+
+        /* --- 5. VOLCANIC --- */
+        /* Dark with very subtle warm red/orange undertones */
+        .volcanic {
+            background-color: #0f0a0a;
+            background-image:
+                /* Warm glow from below */
+                radial-gradient(ellipse at 50% 150%, #ef444410, transparent 60%),
+                /* Secondary subtle glow */
+                radial-gradient(ellipse at 20% 120%, #ef444408, transparent 70%);
+            background-repeat: no-repeat;
+        }
+
+        /* --- 6. FOREST FLOOR --- */
+        /* Dark with subtle green undertones and organic patterns */
+        .forest-floor {
+            background-color: #0a0f0a;
+            background-image:
+                /* Dappled light 1 */
+                radial-gradient(ellipse at 30% 20%, #10b98110, transparent 60%),
+                /* Dappled light 2 */
+                radial-gradient(ellipse at 75% 80%, #10b98108, transparent 70%),
+                /* Dappled light 3 */
+                radial-gradient(ellipse at 50% 50%, #10b98105, transparent 80%);
+            background-repeat: no-repeat;
+        }
+
+    </style>
+</head>
+<body>
+
+    <section class="background-section deep-space">
+        <div class="label">1. Deep Space</div>
+    </section>
+
+    <section class="background-section northern-lights">
+        <div class="label">2. Northern Lights</div>
+    </section>
+
+    <section class="background-section carbon-fiber">
+        <div class="label">3. Carbon Fiber</div>
+    </section>
+
+    <section class="background-section ocean-depth">
+        <div class="label">4. Ocean Depth</div>
+    </section>
+
+    <section class="background-section volcanic">
+        <div class="label">5. Volcanic</div>
+    </section>
+
+    <section class="background-section forest-floor">
+        <div class="label">6. Forest Floor</div>
+    </section>
+
+</body>
+</html>

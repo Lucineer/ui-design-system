@@ -1,0 +1,827 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Premium Mobile Navigation Patterns</title>
+<style>
+  /* GLOBAL & THEME */
+  :root {
+    --bg-base: #0a0a0a;
+    --bg-surface: #141414;
+    --bg-elevated: #1e1e1e;
+    --bg-overlay: rgba(20, 20, 20, 0.7);
+    --border: rgba(255, 255, 255, 0.1);
+    --border-light: rgba(255, 255, 255, 0.15);
+    --text-primary: #ffffff;
+    --text-secondary: #8e8e93;
+    --text-tertiary: #636366;
+    --accent: #ffffff;
+    --accent-blue: #0a84ff;
+    --danger: #ff453a;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-pill: 999px;
+    --shadow-pop: 0 16px 40px rgba(0,0,0,0.5);
+    --font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  body {
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    font-family: var(--font);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    padding: 2rem;
+  }
+
+  /* LAYOUT & PRESENTATION */
+  .header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  .header h1 { font-size: 24px; font-weight: 600; letter-spacing: -0.5px; }
+  .header p { color: var(--text-secondary); margin-top: 8px; font-size: 15px; }
+
+  .showcase-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .pattern-card {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .pattern-card h2 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-secondary);
+    font-weight: 600;
+  }
+
+  .mock-screen {
+    background: #000;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03);
+  }
+  
+  .mock-screen.tall { height: 420px; }
+  .mock-screen.short { height: 220px; }
+  .mock-content-filler {
+    padding: 20px;
+    color: var(--text-tertiary);
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .skeleton-line { height: 12px; background: var(--bg-surface); border-radius: 6px; width: 100%; }
+  .skeleton-line.short { width: 60%; }
+
+  kbd {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+
+  /* -----------------------------------
+     1. BOTTOM TAB BAR
+     ----------------------------------- */
+  .bottom-tab-bar {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 16px env(safe-area-inset-bottom);
+    background: var(--bg-overlay);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border);
+    z-index: 10;
+  }
+  .tab-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    color: var(--text-secondary);
+    font-size: 10px;
+    font-weight: 500;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.2s;
+  }
+  .tab-item:hover, .tab-item.active { color: var(--accent); }
+  .tab-item svg { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 2; transition: transform 0.2s; }
+  .tab-item.active svg { transform: scale(1.1); fill: currentColor; }
+  .tab-badge {
+    position: absolute;
+    top: -4px;
+    right: -6px;
+    background: var(--danger);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 5px;
+    border-radius: 10px;
+    border: 2px solid #000;
+  }
+
+  /* -----------------------------------
+     2. HAMBURGER MENU (Pure CSS)
+     ----------------------------------- */
+  .hamburger-toggle { display: none; }
+  .hamburger-btn {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    z-index: 30;
+    cursor: pointer;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 8px;
+    display: grid;
+    place-items: center;
+  }
+  .hamburger-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 15;
+  }
+  .drawer-menu {
+    position: absolute;
+    top: 0; bottom: 0; left: 0;
+    width: 280px;
+    background: var(--bg-surface);
+    border-right: 1px solid var(--border);
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  #ham-toggle:checked ~ .hamburger-overlay { opacity: 1; pointer-events: auto; }
+  #ham-toggle:checked ~ .drawer-menu { transform: translateX(0); }
+
+  .drawer-profile {
+    padding: 24px 20px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--bg-elevated); display: grid; place-items: center; }
+  .profile-info h3 { font-size: 15px; font-weight: 600; margin: 0; }
+  .profile-info p { font-size: 13px; color: var(--text-secondary); margin: 0; }
+
+  .drawer-section {
+    padding: 16px 12px 8px;
+    font-size: 11px;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    letter-spacing: 0.5px;
+  }
+  .drawer-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    color: var(--text-primary);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .drawer-item svg { width: 20px; height: 20px; color: var(--text-secondary); }
+  .drawer-item:hover { background: var(--bg-elevated); }
+  .drawer-item.active { background: rgba(255,255,255,0.05); color: var(--accent); border-left: 3px solid var(--accent); padding-left: 17px; }
+  .drawer-item.active svg { color: var(--accent); }
+  .drawer-bottom { margin-top: auto; border-top: 1px solid var(--border); }
+  .drawer-item.logout { color: var(--danger); }
+  .drawer-item.logout svg { color: var(--danger); }
+
+  /* -----------------------------------
+     3. COMMAND PALETTE
+     ----------------------------------- */
+  .cmd-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: grid;
+    place-items: center;
+    padding: 16px;
+    z-index: 10;
+  }
+  .cmd-palette {
+    width: 100%;
+    max-width: 400px;
+    background: var(--bg-surface);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-pop);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .cmd-header {
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    border-bottom: 1px solid var(--border);
+    gap: 12px;
+  }
+  .cmd-header svg { width: 18px; height: 18px; color: var(--text-secondary); }
+  .cmd-header input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 16px 0;
+    color: var(--text-primary);
+    font-size: 15px;
+    outline: none;
+    font-family: inherit;
+  }
+  .cmd-header input::placeholder { color: var(--text-tertiary); }
+  .cmd-body { padding: 8px; max-height: 300px; overflow-y: auto; }
+  .cmd-group-title { font-size: 11px; font-weight: 600; color: var(--text-tertiary); padding: 8px 8px 4px; text-transform: uppercase; }
+  .cmd-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 8px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+  }
+  .cmd-item-left { display: flex; align-items: center; gap: 12px; font-size: 14px; color: var(--text-secondary); }
+  .cmd-item-left svg { width: 16px; height: 16px; }
+  .cmd-item:hover, .cmd-item.active { background: var(--bg-elevated); color: var(--text-primary); }
+  .cmd-item:hover .cmd-item-left, .cmd-item.active .cmd-item-left { color: var(--text-primary); }
+  .cmd-shortcuts { display: flex; gap: 4px; }
+
+  /* -----------------------------------
+     4. CONTEXT MENU
+     ----------------------------------- */
+  .context-menu-wrapper {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 220px;
+    background: var(--bg-overlay);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: 6px;
+    box-shadow: var(--shadow-pop);
+    z-index: 10;
+  }
+  .ctx-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    color: var(--text-primary);
+    transition: background 0.1s;
+  }
+  .ctx-left { display: flex; align-items: center; gap: 10px; }
+  .ctx-left svg { width: 16px; height: 16px; color: var(--text-secondary); }
+  .ctx-item:hover { background: var(--accent-blue); }
+  .ctx-item:hover .ctx-left svg, .ctx-item:hover .ctx-hint { color: #fff; }
+  .ctx-hint { font-size: 12px; color: var(--text-tertiary); letter-spacing: 1px; }
+  .ctx-divider { height: 1px; background: var(--border); margin: 4px 0; }
+  .ctx-item.danger { color: var(--danger); }
+  .ctx-item.danger .ctx-left svg { color: var(--danger); }
+  .ctx-item.danger:hover { background: var(--danger); color: #fff; }
+  .ctx-item.danger:hover .ctx-left svg { color: #fff; }
+
+  /* -----------------------------------
+     5. DROPDOWN MENU
+     ----------------------------------- */
+  .dropdown-container {
+    padding: 40px;
+    display: flex;
+    justify-content: center;
+  }
+  details.dropdown { position: relative; }
+  details.dropdown summary {
+    list-style: none;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    padding: 10px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    user-select: none;
+    transition: 0.2s;
+  }
+  details.dropdown summary::-webkit-details-marker { display: none; }
+  details.dropdown summary:hover { background: var(--bg-elevated); }
+  details.dropdown summary svg { width: 16px; height: 16px; transition: transform 0.2s; }
+  details.dropdown[open] summary svg { transform: rotate(180deg); }
+  
+  .dropdown-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    width: 260px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 6px;
+    box-shadow: var(--shadow-pop);
+    z-index: 20;
+    animation: fadeIn 0.15s ease-out;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .dd-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+  }
+  .dd-item:hover { background: rgba(255,255,255,0.05); }
+  .dd-check { width: 16px; height: 16px; color: var(--accent); opacity: 0; margin-top: 2px; }
+  .dd-item.selected .dd-check { opacity: 1; }
+  .dd-text { flex: 1; }
+  .dd-title { font-size: 14px; font-weight: 500; color: var(--text-primary); }
+  .dd-desc { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+  .dd-shortcut { font-size: 11px; color: var(--text-tertiary); margin-top: 2px; letter-spacing: 0.5px; }
+
+  /* -----------------------------------
+     6. BREADCRUMB NAV
+     ----------------------------------- */
+  .breadcrumb-container {
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    height: 100%;
+  }
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    background: var(--bg-surface);
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+  }
+  .bc-item {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    max-width: 80px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.2s;
+  }
+  .bc-item:hover { color: var(--text-primary); }
+  .bc-item.active { color: var(--text-primary); max-width: 120px; }
+  .bc-sep { color: var(--text-tertiary); font-size: 12px; }
+
+  /* -----------------------------------
+     7. PILL NAVIGATION
+     ----------------------------------- */
+  .pill-nav-container {
+    padding: 24px 0 24px 24px;
+    display: flex;
+    align-items: center;
+    height: 100%;
+  }
+  .pill-scroll {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    scrollbar-width: none; /* Firefox */
+    scroll-snap-type: x mandatory;
+    padding-right: 24px;
+  }
+  .pill-scroll::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+  .pill {
+    scroll-snap-align: start;
+    padding: 8px 16px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .pill:hover { background: var(--bg-elevated); color: var(--text-primary); }
+  .pill.active { background: var(--text-primary); color: var(--bg-base); font-weight: 600; border-color: var(--text-primary); }
+
+  /* -----------------------------------
+     8. SEGMENTED CONTROL
+     ----------------------------------- */
+  .segmented-container {
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
+  .segmented-control {
+    display: flex;
+    background: var(--bg-surface);
+    padding: 4px;
+    border-radius: var(--radius-sm);
+    position: relative;
+    border: 1px solid var(--border);
+    width: 100%;
+    max-width: 320px;
+  }
+  .segmented-control input[type="radio"] { display: none; }
+  .seg-label {
+    flex: 1;
+    text-align: center;
+    padding: 8px 0;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    position: relative;
+    z-index: 2;
+    transition: color 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .seg-label svg { width: 14px; height: 14px; }
+  
+  .seg-indicator {
+    position: absolute;
+    top: 4px; bottom: 4px; left: 4px;
+    width: calc(33.333% - 2.66px);
+    background: var(--bg-elevated);
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.05);
+    z-index: 1;
+    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  }
+
+  #seg-1:checked ~ .seg-indicator { transform: translateX(0); }
+  #seg-2:checked ~ .seg-indicator { transform: translateX(100%); }
+  #seg-3:checked ~ .seg-indicator { transform: translateX(200%); }
+
+  #seg-1:checked ~ label[for="seg-1"],
+  #seg-2:checked ~ label[for="seg-2"],
+  #seg-3:checked ~ label[for="seg-3"] {
+    color: var(--text-primary);
+  }
+</style>
+</head>
+<body>
+
+  <!-- SVG SPRITESHEET FOR ICONS -->
+  <svg style="display: none;">
+    <defs>
+      <!-- Base Icons -->
+      <symbol id="icon-home" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></symbol>
+      <symbol id="icon-chat" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></symbol>
+      <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></symbol>
+      <symbol id="icon-settings" viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></symbol>
+      <symbol id="icon-user" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></symbol>
+      <symbol id="icon-menu" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></symbol>
+      
+      <!-- Drawer Icons -->
+      <symbol id="icon-layout" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></symbol>
+      <symbol id="icon-tool" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></symbol>
+      <symbol id="icon-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></symbol>
+      <symbol id="icon-logout" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></symbol>
+      
+      <!-- Command Palette Icons -->
+      <symbol id="icon-cmd" viewBox="0 0 24 24"><path d="M18 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3H6a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 3 3 0 0 0-3-3z"></path></symbol>
+      <symbol id="icon-play" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></symbol>
+      
+      <!-- Context Menu Icons -->
+      <symbol id="icon-edit" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></symbol>
+      <symbol id="icon-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></symbol>
+      <symbol id="icon-share" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></symbol>
+      <symbol id="icon-trash" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></symbol>
+      
+      <!-- Utilities -->
+      <symbol id="icon-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></symbol>
+      <symbol id="icon-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></symbol>
+      
+      <!-- Segmented Control Icons -->
+      <symbol id="icon-list" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></symbol>
+      <symbol id="icon-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></symbol>
+      <symbol id="icon-kanban" viewBox="0 0 24 24"><rect x="4" y="3" width="4" height="18"></rect><rect x="10" y="3" width="4" height="12"></rect><rect x="16" y="3" width="4" height="8"></rect></symbol>
+    </defs>
+  </svg>
+
+  <div class="header">
+    <h1>Premium Navigation Patterns</h1>
+    <p>Pure CSS • Dark Theme • No JS Frameworks</p>
+  </div>
+
+  <div class="showcase-grid">
+
+    <!-- 1. BOTTOM TAB BAR -->
+    <div class="pattern-card">
+      <h2>1. Bottom Tab Bar</h2>
+      <div class="mock-screen tall">
+        <div class="mock-content-filler">
+          <div class="skeleton-line short"></div>
+          <div class="skeleton-line"></div>
+          <div class="skeleton-line"></div>
+          <div class="skeleton-line" style="width:80%"></div>
+        </div>
+        
+        <div class="bottom-tab-bar">
+          <div class="tab-item active">
+            <svg><use href="#icon-home"></use></svg>
+            Home
+          </div>
+          <div class="tab-item">
+            <svg><use href="#icon-chat"></use></svg>
+            Chat
+            <span class="tab-badge">3</span>
+          </div>
+          <div class="tab-item">
+            <svg><use href="#icon-search"></use></svg>
+            Search
+          </div>
+          <div class="tab-item">
+            <svg><use href="#icon-settings"></use></svg>
+            Settings
+          </div>
+          <div class="tab-item">
+            <svg><use href="#icon-user"></use></svg>
+            Profile
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. HAMBURGER MENU -->
+    <div class="pattern-card">
+      <h2>2. Hamburger Menu</h2>
+      <div class="mock-screen tall">
+        <!-- Pure CSS Toggle Hack -->
+        <input type="checkbox" id="ham-toggle" class="hamburger-toggle">
+        
+        <label for="ham-toggle" class="hamburger-btn">
+          <svg style="width:20px;height:20px;stroke:var(--text-primary);fill:none;stroke-width:2"><use href="#icon-menu"></use></svg>
+        </label>
+
+        <div class="mock-content-filler" style="margin-top: 60px;">
+          <p>Slide menu from left by clicking the hamburger icon.</p>
+        </div>
+
+        <label for="ham-toggle" class="hamburger-overlay"></label>
+
+        <div class="drawer-menu">
+          <div class="drawer-profile">
+            <div class="avatar"><svg style="width:24px;height:24px;color:var(--text-secondary);stroke:currentColor;fill:none;stroke-width:2"><use href="#icon-user"></use></svg></div>
+            <div class="profile-info">
+              <h3>Alex Morgan</h3>
+              <p>alex@example.com</p>
+            </div>
+          </div>
+          
+          <div class="drawer-section">Main</div>
+          <div class="drawer-item active"><svg stroke="currentColor" fill="none" stroke-width="2"><use href="#icon-layout"></use></svg> Dashboard</div>
+          <div class="drawer-item"><svg stroke="currentColor" fill="none" stroke-width="2"><use href="#icon-chat"></use></svg> Messages</div>
+          
+          <div class="drawer-section">Tools</div>
+          <div class="drawer-item"><svg stroke="currentColor" fill="none" stroke-width="2"><use href="#icon-tool"></use></svg> Integrations</div>
+          
+          <div class="drawer-section">Account</div>
+          <div class="drawer-item"><svg stroke="currentColor" fill="none" stroke-width="2"><use href="#icon-shield"></use></svg> Privacy & Security</div>
+          
+          <div class="drawer-bottom">
+            <div class="drawer-item logout"><svg stroke="currentColor" fill="none" stroke-width="2"><use href="#icon-logout"></use></svg> Log Out</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. COMMAND PALETTE -->
+    <div class="pattern-card">
+      <h2>3. Command Palette</h2>
+      <div class="mock-screen tall" style="background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+PHBhdGggZD0iTTAgMGg0MHY0MEgweiIgZmlsbD0iIzBhMGEwYSIvPjxwYXRoIGQ9Ik0wIDEwaDQwTTAgMjBoNDBNMCAzMGg0ME0xMCAwdjQwTTIwIDB2NDBNMzAgMHY0MCIgc3Ryb2tlPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMDUpIi8+PC9zdmc+');">
+        
+        <div class="cmd-overlay">
+          <div class="cmd-palette">
+            <div class="cmd-header">
+              <svg stroke="currentColor" fill="none" stroke-width="2"><use href="#icon-search"></use></svg>
+              <input type="text" placeholder="Type a command or search...">
+              <kbd>ESC</kbd>
+            </div>
+            <div class="cmd-body">
+              <div class="cmd-group-title">Recent</div>
+              <div class="cmd-item active">
+                <div class="cmd-item-left">
+                  <svg stroke="currentColor" fill="none" stroke-width="2"><use href="#icon-play"></use></svg>
+                  Deploy to Production
+                </div>
+                <div class="cmd-shortcuts"><kbd>⌘</kbd> <kbd>D</kbd></div>
+              </div>
+              <div class="cmd-item">
+                <div class="cmd-item-left">
+                  <svg stroke="currentColor" fill="none" stroke-width="2"><use href="#icon-settings"></use></svg>
+                  Open Settings
+                </div>
+                <div class="cmd-shortcuts"><kbd>⌘</kbd> <kbd>,</kbd></div>
+              </div>
+              
+              <div class="cmd-group-title" style="margin-top: 8px;">Suggested</div>
+              <div class="cmd-item">
+                <div class="cmd-item-left">
+                  <svg stroke="currentColor" fill="none" stroke-width="2"><use href="#icon-user"></use></svg>
+                  Invite Teammates
+                </div>
+              </div>
+              <div class="cmd-item">
+                <div class="cmd-item-left">
+                  <svg stroke="currentColor" fill="none" stroke-width="2"><use href="#icon-cmd"></use></svg>
+                  View Keyboard Shortcuts
+                </div>
+                <div class="cmd-shortcuts"><kbd>?</kbd></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+
+    <!-- 4. CONTEXT MENU -->
+    <div class="pattern-card">
+      <h2>4. Context Menu</h2>
+      <div class="mock-screen tall" style="background: var(--bg-elevated);">
+        
+        <div class="context-menu-wrapper">
+          <div class="ctx-item">
+            <div class="ctx-left"><svg stroke="currentColor" fill="none" stroke-width="2"><use href="#icon-edit"></use></svg> Edit</div>
+            <div class="ctx-hint">⌘ E</div>
+          </div>
+          <div class="ctx-item">
+            <div class="ctx-left"><svg stroke="currentColor" fill="none" stroke-width="2"><use href="#icon-copy"></use></svg> Copy</div>
+            <div class="ctx-hint">⌘ C</div>
+          </div>
+          <div class="ctx-item">
+            <div class="ctx-left"><svg stroke="currentColor" fill="none" stroke-width="2"><use href="#icon-share"></use></svg> Share</div>
+          </div>
+          <div class="ctx-divider"></div>
+          <div class="ctx-item danger">
+            <div class="ctx-left"><svg stroke="currentColor" fill="none" stroke-width="2"><use href="#icon-trash"></use></svg> Delete</div>
+            <div class="ctx-hint">⌘ ⌫</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 5. DROPDOWN MENU -->
+    <div class="pattern-card">
+      <h2>5. Dropdown Menu</h2>
+      <div class="mock-screen short">
+        <div class="dropdown-container">
+          
+          <details class="dropdown" open>
+            <summary>
+              View Options <svg stroke="currentColor" fill="none" stroke-width="2"><use href="#icon-chevron"></use></svg>
+            </summary>
+            
+            <div class="dropdown-menu">
+              <div class="dd-item selected">
+                <svg class="dd-check" stroke="currentColor" fill="none" stroke-width="2"><use href="#icon-check"></use></svg>
+                <div class="dd-text">
+                  <div class="dd-title">System Theme</div>
+                  <div class="dd-desc">Follows system appearance</div>
+                </div>
+                <div class="dd-shortcut">⌘ T</div>
+              </div>
+              <div class="dd-item">
+                <svg class="dd-check" stroke="currentColor" fill="none" stroke-width="2"><use href="#icon-check"></use></svg>
+                <div class="dd-text">
+                  <div class="dd-title">Dark Theme</div>
+                  <div class="dd-desc">Always use dark mode</div>
+                </div>
+              </div>
+              <div class="dd-item">
+                <svg class="dd-check" stroke="currentColor" fill="none" stroke-width="2"><use href="#icon-check"></use></svg>
+                <div class="dd-text">
+                  <div class="dd-title">Light Theme</div>
+                  <div class="dd-desc">Always use light mode</div>
+                </div>
+              </div>
+            </div>
+          </details>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. BREADCRUMB NAV -->
+    <div class="pattern-card">
+      <h2>6. Breadcrumb Nav</h2>
+      <div class="mock-screen short">
+        <div class="breadcrumb-container">
+          <div class="breadcrumb">
+            <a href="#" class="bc-item">Home</a>
+            <span class="bc-sep">/</span>
+            <a href="#" class="bc-item">Engineering</a>
+            <span class="bc-sep">/</span>
+            <a href="#" class="bc-item">Frontend Projects</a>
+            <span class="bc-sep">/</span>
+            <span class="bc-item active">Navigation.tsx</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. PILL NAVIGATION -->
+    <div class="pattern-card">
+      <h2>7. Pill Navigation</h2>
+      <div class="mock-screen short">
+        <div class="pill-nav-container">
+          <div class="pill-scroll">
+            <div class="pill active">All Issues</div>
+            <div class="pill">Active</div>
+            <div class="pill">Assigned to me</div>
+            <div class="pill">Archived</div>
+            <div class="pill">Drafts</div>
+            <div class="pill">Completed</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8. SEGMENTED CONTROL -->
+    <div class="pattern-card">
+      <h2>8. Segmented Control</h2>
+      <div class="mock-screen short">
+        <div class="segmented-container">
+          <div class="segmented-control">
+            <input type="radio" name="seg-view" id="seg-1" checked>
+            <input type="radio" name="seg-view" id="seg-2">
+            <input type="radio" name="seg-view" id="seg-3">
+            
+            <div class="seg-indicator"></div>
+            
+            <label for="seg-1" class="seg-label">
+              <svg stroke="currentColor" fill="none" stroke-width="2"><use href="#icon-list"></use></svg> List
+            </label>
+            <label for="seg-2" class="seg-label">
+              <svg stroke="currentColor" fill="none" stroke-width="2"><use href="#icon-grid"></use></svg> Grid
+            </label>
+            <label for="seg-3" class="seg-label">
+              <svg stroke="currentColor" fill="none" stroke-width="2"><use href="#icon-kanban"></use></svg> Kanban
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
