@@ -1,64 +1,47 @@
-# UI Design System 🖤
+# Cocapn Fleet UI Design System
 
-You shouldn't have to rebuild every button every time you spin up a new agent.
+You build agent interfaces. They need a consistent, calm, and ownable foundation. This is the shared baseline used across the fleet—a set of static assets you fork and own.
 
-This is the official dark theme design system for the Cocapn Fleet. It provides a shared baseline for agent interfaces, built because teams were spending time on repetitive styling instead of core agent logic. Fork it to create your own starting point.
+---
+
+## Why this exists
+Teams building on Cocapn were repeatedly rebuilding the same core components. This standardizes the foundational layer: buttons, forms, and layouts. It’s a single, static stylesheet with no dependencies.
 
 ---
 
 ## Quick Start
+1.  **Fork this repository.** You will modify your own copy.
+2.  Host the `/static` directory on any static file service (e.g., Cloudflare Pages, Vercel, NGINX).
+3.  Edit the 12 CSS custom properties in `/static/theme.css` for your brand colors and link the stylesheet in your HTML.
 
-1.  **Fork** this repository.
-2.  Deploy the `/static` directory to any static host (Cloudflare Pages, Vercel, etc.).
-3.  Modify the root CSS variables in `/static/theme.css` for your brand, then link to it in your HTML.
+## What you get
+*   No `npm`, builds, or tooling. It's vanilla CSS that works in modern browsers.
+*   A fork-first workflow. You control the source; no upstream updates will change your interface.
+*   A dark-theme foundation. All colors are calibrated for extended use and meet WCAG contrast guidelines.
+*   Minimal footprint. ~11kb of uncompressed CSS. No JavaScript.
 
----
+## Components & Assets
+*   12 root CSS variables for theming.
+*   Styled base components: buttons, cards, form inputs, modals, and menus with interactive states.
+*   A set of consistent SVG icons.
+*   Subtle, non-competing background patterns.
+*   All assets are local; no external network requests are required.
 
-## What You Get
+## A Starting Point, Not a Library
+This is not a package you install. It is a starting point you fork and modify indefinitely. You control every border radius, color, and component. You will not receive versioned updates unless you pull them manually.
 
-*   **Dark theme:** A color palette calibrated for readability with 12 core CSS custom properties.
-*   **Component styles:** Pre-built CSS for buttons, cards, inputs, modals, and menus, including interactive states.
-*   **Static assets:** A set of SVG icons and background patterns.
-*   **Zero dependencies:** Vanilla CSS with no build step, framework, or npm packages.
-*   **Fleet-native:** Styles are tested for compatibility with the Cocapn agent runtime.
+**An honest limitation:** It is a static design system. If you need complex client-side interactivity (e.g., a full component framework with state), you must build that layer yourself. This provides the visual foundation.
 
----
-
-## What Makes This Different
-
-This is a design system you own, not a library you import. You fork it once and modify it indefinitely.
-
-*   **No forced updates:** You will never receive a breaking change. Integrate upstream improvements only if you choose to.
-*   **No abstractions:** Every line of CSS and SVG is in your control.
-*   **Local-first:** Everything works offline after download; no external CDN is required.
-
-**Limitation:** As a static CSS system, dynamic theme switching (e.g., light/dark mode) requires manual implementation on your part.
-
----
-
-## Try It
-
-Preview the component library live:  
-[https://the-fleet.casey-digennaro.workers.dev/ui](https://the-fleet.casey-digennaro.workers.dev/ui)
-
----
-
-## Architecture
-
-This repository contains only static assets—plain CSS, SVG files, and HTML examples. It is designed to be forked and extended, serving as a centralized reference for foundational UI patterns within the fleet.
-
----
+## Live Preview
+See all components and styles in the fleet directory:
+👉 https://the-fleet.casey-digennaro.workers.dev/ui
 
 ## Contributing
-
-Discussions and pull requests for core accessibility improvements, documentation, or bug fixes are welcome.
-
----
+Contributions for accessibility improvements, bug fixes, and documentation are welcome. This is maintained by the fleet, for the fleet.
 
 ## License & Attribution
+MIT License.
 
-MIT License.  
-Created as part of the Cocapn Fleet.  
 Attribution: Superinstance & Lucineer (DiGennaro et al.).
 
 ---
