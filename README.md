@@ -1,72 +1,68 @@
-<p align="center">
-  <img src="https://raw.githubusercontent.com/Lucineer/capitaine/master/docs/capitaine-logo.jpg" alt="Cocapn" width="120">
-</p>
+# UI Design System 🖤
 
-<h1 align="center">UI Design System</h1>
+You shouldn't have to rebuild every button every time you spin up a new agent.
 
-<p align="center">Shared design system for the Lucineer fleet. Components, backgrounds, menus, mockups. Consistent look across all vessels.</p>
-
-<p align="center">
-  <a href="#quick-start">Quick Start</a> ·
-  <a href="#the-fleet">The Fleet</a> ·
-  <a href="https://github.com/Lucineer/capitaine">Capitaine</a>
-</p>
+This is the official dark theme design system for the Cocapn Fleet. It provides a shared baseline for agent interfaces, built because teams were spending time on repetitive styling instead of core agent logic. Fork it to create your own starting point.
 
 ---
 
 ## Quick Start
 
-```bash
-git clone https://github.com/Lucineer/ui-design-system.git
-cd ui-design-system
-# Follow repo-specific setup instructions
-```
+1.  **Fork** this repository.
+2.  Deploy the `/static` directory to any static host (Cloudflare Pages, Vercel, etc.).
+3.  Modify the root CSS variables in `/static/theme.css` for your brand, then link to it in your HTML.
 
-## The Fleet
+---
 
-UI Design System is one of 110+ vessels in the Lucineer fleet. Every vessel is a git-native repo-agent — the repo IS the agent.
+## What You Get
 
-<details>
-<summary><strong>⚓ The Fleet</strong></summary>
+*   **Dark theme:** A color palette calibrated for readability with 12 core CSS custom properties.
+*   **Component styles:** Pre-built CSS for buttons, cards, inputs, modals, and menus, including interactive states.
+*   **Static assets:** A set of SVG icons and background patterns.
+*   **Zero dependencies:** Vanilla CSS with no build step, framework, or npm packages.
+*   **Fleet-native:** Styles are tested for compatibility with the Cocapn agent runtime.
 
-**Flagship vessels**
-- [Capitaine (flagship)](https://github.com/Lucineer/capitaine)
-- [personallog-ai](https://github.com/Lucineer/personallog-ai)
-- [businesslog-ai](https://github.com/Lucineer/businesslog-ai)
-- [studylog-ai](https://github.com/Lucineer/studylog-ai)
-- [makerlog-ai](https://github.com/Lucineer/makerlog-ai)
-- [playerlog-ai](https://github.com/Lucineer/playerlog-ai)
-- [dmlog-ai](https://github.com/Lucineer/dmlog-ai)
-- [reallog-ai](https://github.com/Lucineer/reallog-ai)
-- [deckboss-ai](https://github.com/Lucineer/deckboss-ai)
+---
 
-**Fleet services**
-- [Git-Agent (minimal)](https://github.com/Lucineer/git-agent)
-- [Fleet Catalog](https://github.com/Lucineer/capitaine/blob/master/docs/fleet/FLEET.md)
-- [Fleet Orchestrator](https://github.com/Lucineer/fleet-orchestrator)
-- [Dead Reckoning Engine](https://github.com/Lucineer/dead-reckoning-engine)
-- [Dream Engine](https://github.com/Lucineer/dream-engine)
-- [Seed UI](https://github.com/Lucineer/seed-ui)
+## What Makes This Different
 
-**For power users**
-- [Cocapn Lite (tabula rasa)](https://github.com/Lucineer/cocapn-lite)
-- [Cocapn (core)](https://github.com/Lucineer/cocapn)
-- [ZeroClaw (framework)](https://github.com/Lucineer/zeroclaw)
+This is a design system you own, not a library you import. You fork it once and modify it indefinitely.
 
-[View all 110+ repos →](https://github.com/orgs/Lucineer/repositories)
-[Fleet manifest →](https://github.com/Lucineer/capitaine/blob/master/docs/fleet/FLEET.md)
+*   **No forced updates:** You will never receive a breaking change. Integrate upstream improvements only if you choose to.
+*   **No abstractions:** Every line of CSS and SVG is in your control.
+*   **Local-first:** Everything works offline after download; no external CDN is required.
 
-</details>
+**Limitation:** As a static CSS system, dynamic theme switching (e.g., light/dark mode) requires manual implementation on your part.
 
-## Philosophy
+---
 
-> The repo IS the agent. Fork it, give it a heartbeat, and wake up tomorrow to see where it sailed in the night.
+## Try It
 
-- **Fork-first** — Power users fork and customize. Casual users visit the domain.
-- **Git as ground truth** — The commit graph IS the state of the world.
-- **BYOK v2** — Zero keys in code. All keys via secrets store.
-- **Soft actualization** — Vessels evolve gently based on usage, not hard updates.
+Preview the component library live:  
+[https://the-fleet.casey-digennaro.workers.dev/ui](https://the-fleet.casey-digennaro.workers.dev/ui)
 
-## License
+---
 
-MIT · Superinstance & Lucineer (DiGennaro et al.)
+## Architecture
+
+This repository contains only static assets—plain CSS, SVG files, and HTML examples. It is designed to be forked and extended, serving as a centralized reference for foundational UI patterns within the fleet.
+
+---
+
+## Contributing
+
+Discussions and pull requests for core accessibility improvements, documentation, or bug fixes are welcome.
+
+---
+
+## License & Attribution
+
+MIT License.  
+Created as part of the Cocapn Fleet.  
+Attribution: Superinstance & Lucineer (DiGennaro et al.).
+
+---
+
+<div align="center">
+  <a href="https://the-fleet.casey-digennaro.workers.dev">The Fleet</a> • <a href="https://cocapn.ai">Cocapn</a>
+</div>
